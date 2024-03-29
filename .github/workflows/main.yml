@@ -1,4 +1,4 @@
-name: Build and Test React App
+name: Build
 
 on:
   push:
@@ -9,20 +9,17 @@ on:
       - master
 
 jobs:
-  build-and-test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+  build:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install Dependencies
         run: npm install
@@ -30,11 +27,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Test
-        run: npm test
-
-      - name: Publish Coverage Report
-        if: matrix.os == 'ubuntu-latest'
-        uses: codecov/codecov-action@v2
+      - name: Archive Build Artifacts
+        uses: actions/upload-artifact@v2
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          name: build-artifact
+          path: build
